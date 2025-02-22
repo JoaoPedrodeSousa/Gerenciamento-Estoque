@@ -22,8 +22,6 @@ public class User implements Serializable, UserDetails {
     private String corporateEmail;
     private String password;
 
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
