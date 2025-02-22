@@ -13,7 +13,7 @@ public class Product implements Serializable {
     private static final Long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     @Column(unique = true)
     private String SKU;
     private String name;
@@ -29,7 +29,7 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(Long id,
+    public Product(Integer id,
                    String name,
                    String description,
                    ProductCategory category,
@@ -47,11 +47,11 @@ public class Product implements Serializable {
         this.dateOfRegister = dateOfRegister;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

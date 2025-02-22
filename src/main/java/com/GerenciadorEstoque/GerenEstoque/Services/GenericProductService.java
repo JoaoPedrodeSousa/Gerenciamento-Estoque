@@ -2,7 +2,7 @@ package com.GerenciadorEstoque.GerenEstoque.Services;
 
 import java.util.List;
 
-public interface GenericServiceForProducts<K,Y> {
+public interface GenericProductService<K,Y> {
     K findById(Y entityId);
     List<K> findAll();
     K insert(K entity);
