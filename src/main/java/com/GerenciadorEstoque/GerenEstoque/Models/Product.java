@@ -11,16 +11,21 @@ import java.util.Objects;
 @Entity
 public class Product implements Serializable {
     private static final Long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(unique = true)
     private String SKU;
+
     @Column(nullable = false)
     private String name;
+
     private String description;
-    @OneToOne
-    @JoinColumn(name = "category_id")
+
+    @ManyToOne
+    @JoinColumn(name = "category_id",referencedColumnName = "id")
     private ProductCategory productCategory;
 
     @ManyToMany
@@ -28,14 +33,18 @@ public class Product implements Serializable {
                 joinColumns = @JoinColumn(name = "product_id"),
                 inverseJoinColumns = @JoinColumn(name = "provider_id"))
     private List<ProductProvider> providers = new ArrayList<>();
+
     @OneToMany(mappedBy = "product")
     private List<ProductHistory> histories = new ArrayList<>();
 
     @Column(nullable = false)
     private Double price;
+
     private Integer minimumForReplacement;
+
     @Column(nullable = false)
     private Integer quantity;
+
     private Date dateOfRegister;
 
     public Product() {
@@ -44,14 +53,12 @@ public class Product implements Serializable {
     public Product(Integer id,
                    String name,
                    String description,
-                   ProductCategory productCategory,
                    Double price,
                    Integer minimumForReplacement,
                    Integer quantity) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.productCategory = productCategory;
         this.price = price;
         this.minimumForReplacement = minimumForReplacement;
         this.dateOfRegister = new Date();

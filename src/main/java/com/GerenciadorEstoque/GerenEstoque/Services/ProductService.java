@@ -1,20 +1,22 @@
 package com.GerenciadorEstoque.GerenEstoque.Services;
 
+import com.GerenciadorEstoque.GerenEstoque.Models.DTO.ProductRequestDTO;
 import com.GerenciadorEstoque.GerenEstoque.Models.Product;
+import com.GerenciadorEstoque.GerenEstoque.Models.ProductCategory;
 import com.GerenciadorEstoque.GerenEstoque.Models.ProductHistory;
-import com.GerenciadorEstoque.GerenEstoque.Utils.DateFormat;
+import com.GerenciadorEstoque.GerenEstoque.repository.ProductCategoryRepository;
 import com.GerenciadorEstoque.GerenEstoque.repository.ProductHistoryRepository;
 import com.GerenciadorEstoque.GerenEstoque.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductService implements GenericProductService<Product,Integer>{
+public class ProductService{
 
     @Autowired
     private ProductRepository productRepository;
@@ -22,7 +24,9 @@ public class ProductService implements GenericProductService<Product,Integer>{
     @Autowired
     private ProductHistoryRepository historyRepository;
 
-    @Override
+    @Autowired
+    private ProductCategoryRepository categoryRepository;
+
     public Product findById(Integer entityId) {
         Optional<Product> optionalProduct = productRepository.findById(entityId);
 
@@ -33,24 +37,37 @@ public class ProductService implements GenericProductService<Product,Integer>{
         return optionalProduct.get();
     }
 
-    @Override
     public List<Product> findAll() {
         return productRepository.findAll();
     }
 
-    @Override
-    public Product insert(Product entity) {
-        validateProduct(entity);
+    public Product insert(ProductRequestDTO entityDTO) {
+
+        validateProduct(entityDTO);
+        Product entity = fromDTO(entityDTO);
+
+        String categoryName = entityDTO.getProductCategoryName();
+        Optional<ProductCategory> category = categoryRepository.findByCategoryName(categoryName);
+
+        if(category.isEmpty()){
+            ProductCategory newCategory = new ProductCategory(null, entityDTO.getProductCategoryName());
+            newCategory = categoryRepository.save(newCategory);
+
+            entity.setProductCategory(newCategory);
+        }
+        else{
+            entity.setProductCategory(category.get());
+        }
 
         Product product = productRepository.save(entity);
-        ProductHistory history = new ProductHistory(null, product, DateFormat.getInstance(), product.getQuantity());
+        ProductHistory history = new ProductHistory(null, product, new Date(), product.getQuantity());
         historyRepository.save(history);
+
         return product;
     }
 
-    @Override
-    public Product update(Product entity) {
-        Optional<Product> optionalProduct = productRepository.findById(entity.getId());
+    public Product update(ProductRequestDTO entityDTO) {
+        Optional<Product> optionalProduct = productRepository.findBySku(entityDTO.getSKU());
 
         if (optionalProduct.isEmpty()){
             throw new EntityNotFoundException("Product Not Found");
@@ -58,19 +75,16 @@ public class ProductService implements GenericProductService<Product,Integer>{
 
         Product product = optionalProduct.get();
 
-        Integer newQuantity = entity.getQuantity() - product.getQuantity();
-
-        if(!newQuantity.equals(0)){
-            ProductHistory history = new ProductHistory(null,product, DateFormat.getInstance(),newQuantity);
-            historyRepository.save(history);
-        }
-
-        updateData(product, entity);
+        updateData(product, entityDTO);
         productRepository.save(product);
         return product;
     }
 
-    private void validateProduct(Product entity) {
+    public void delete(Integer entityId) {
+        productRepository.deleteById(entityId);
+    }
+
+    private void validateProduct(ProductRequestDTO entity) {
         if (entity.getName() == null || entity.getName().isBlank()) {
             throw new IllegalArgumentException("O nome do produto não pode estar vazio.");
         }
@@ -82,16 +96,29 @@ public class ProductService implements GenericProductService<Product,Integer>{
         }
     }
 
-    private void updateData(Product product, Product entity){
-        product.setName(entity.getName());
-        product.setDescription(entity.getDescription());
-        product.setProductCategory(entity.getProductCategory());
-        product.setProviders(entity.getProviders());
-        product.setPrice(entity.getPrice());
+    private Product fromDTO(ProductRequestDTO entityDTO){
+        Product entity = new Product();
+
+        entity.setName(entityDTO.getName());
+        entity.setDescription(entityDTO.getDescription());
+        entity.setPrice(entityDTO.getPrice());
+        entity.setMinimumForReplacement(entityDTO.getMinimumForReplacement());
+        entity.setQuantity(entityDTO.getQuantity());
+
+        return entity;
     }
 
-    @Override
-    public void delete(Integer entityId) {
-        productRepository.deleteById(entityId);
+    private void updateData(Product product, ProductRequestDTO entityDTO){
+        product.setName(entityDTO.getName());
+        product.setDescription(entityDTO.getDescription());
+/*        product.setProductCategory(entityDTO.getProductCategory());
+        product.setProviders(entityDTO.getProviders());*/
+        product.setPrice(entityDTO.getPrice());
+        product.setQuantity(entityDTO.getQuantity());
+        product.setMinimumForReplacement(entityDTO.getMinimumForReplacement());
+
+        ProductHistory history = new ProductHistory(null, product, new Date(), product.getQuantity());
+        historyRepository.save(history);
     }
+
 }

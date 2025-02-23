@@ -13,8 +13,7 @@ public class ProductHistory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
+
     private Product product;
     private Date dateOfReplacement;
     private Integer numberOfReplacementProducts;
