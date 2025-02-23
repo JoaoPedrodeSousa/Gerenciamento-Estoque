@@ -1,9 +1,6 @@
 package com.GerenciadorEstoque.GerenEstoque.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,24 +11,29 @@ public class ProductHistory implements Serializable {
     private static final Long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
     private Date dateOfReplacement;
+    private Integer numberOfReplacementProducts;
 
     public ProductHistory() {
     }
 
-    public ProductHistory(Long id, Product product, Date dateOfReplacement) {
+    public ProductHistory(Integer id, Product product, Date dateOfReplacement, Integer numberOfReplacementProducts) {
         this.id = id;
         this.product = product;
         this.dateOfReplacement = dateOfReplacement;
+        this.numberOfReplacementProducts = numberOfReplacementProducts;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -51,6 +53,14 @@ public class ProductHistory implements Serializable {
         this.dateOfReplacement = dateOfReplacement;
     }
 
+    public Integer getNumberOfReplacementProducts() {
+        return numberOfReplacementProducts;
+    }
+
+    public void setNumberOfReplacementProducts(Integer numberOfReplacementProducts) {
+        this.numberOfReplacementProducts = numberOfReplacementProducts;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,5 +71,15 @@ public class ProductHistory implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "ProductHistory{" +
+                "id=" + id +
+                ", product=" + product +
+                ", dateOfReplacement=" + dateOfReplacement +
+                ", numberOfReplacementProducts=" + numberOfReplacementProducts +
+                '}';
     }
 }

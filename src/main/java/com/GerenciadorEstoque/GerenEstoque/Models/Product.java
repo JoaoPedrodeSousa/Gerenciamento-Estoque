@@ -16,14 +16,26 @@ public class Product implements Serializable {
     private Integer id;
     @Column(unique = true)
     private String SKU;
+    @Column(nullable = false)
     private String name;
     private String description;
-    @JoinColumn(name = "productCategory_id")
-    private ProductCategory category;
+    @OneToOne
+    @JoinColumn(name = "category_id")
+    private ProductCategory productCategory;
 
+    @ManyToMany
+    @JoinTable(name = "product_provider_relation",
+                joinColumns = @JoinColumn(name = "product_id"),
+                inverseJoinColumns = @JoinColumn(name = "provider_id"))
     private List<ProductProvider> providers = new ArrayList<>();
+    @OneToMany(mappedBy = "product")
+    private List<ProductHistory> histories = new ArrayList<>();
+
+    @Column(nullable = false)
     private Double price;
     private Integer minimumForReplacement;
+    @Column(nullable = false)
+    private Integer quantity;
     private Date dateOfRegister;
 
     public Product() {
@@ -32,19 +44,18 @@ public class Product implements Serializable {
     public Product(Integer id,
                    String name,
                    String description,
-                   ProductCategory category,
-                   List<ProductProvider> providers,
+                   ProductCategory productCategory,
                    Double price,
                    Integer minimumForReplacement,
-                   Date dateOfRegister) {
+                   Integer quantity) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.category = category;
-        this.providers = providers;
+        this.productCategory = productCategory;
         this.price = price;
         this.minimumForReplacement = minimumForReplacement;
-        this.dateOfRegister = dateOfRegister;
+        this.dateOfRegister = new Date();
+        this.quantity = quantity;
     }
 
     public Integer getId() {
@@ -75,12 +86,20 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public ProductCategory getCategory() {
-        return category;
+    public ProductCategory getProductCategory() {
+        return productCategory;
     }
 
-    public void setCategory(ProductCategory category) {
-        this.category = category;
+    public void setProductCategory(ProductCategory productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public List<ProductHistory> getHistories() {
+        return histories;
+    }
+
+    public void setHistories(List<ProductHistory> histories) {
+        this.histories = histories;
     }
 
     public List<ProductProvider> getProviders() {
@@ -111,10 +130,13 @@ public class Product implements Serializable {
         return dateOfRegister;
     }
 
-    public void setDateOfRegister(Date dateOfRegister) {
-        this.dateOfRegister = dateOfRegister;
+    public Integer getQuantity() {
+        return quantity;
     }
 
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -135,7 +157,7 @@ public class Product implements Serializable {
                 ", SKU='" + SKU + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", category=" + category +
+                ", productCategory=" + productCategory +
                 ", providers=" + providers +
                 ", price=" + price +
                 ", minimumForReplacement=" + minimumForReplacement +

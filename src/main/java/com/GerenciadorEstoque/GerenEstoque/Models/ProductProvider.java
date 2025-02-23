@@ -1,11 +1,10 @@
 package com.GerenciadorEstoque.GerenEstoque.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,9 +16,16 @@ public class ProductProvider implements Serializable {
 
     private String ProductProviderName;
 
-    public ProductProvider(Integer id, String productProviderName) {
+    @ManyToMany(mappedBy = "providers")
+    private List<Product> products = new ArrayList<>();
+
+    public ProductProvider() {
+    }
+
+    public ProductProvider(Integer id, String productProviderName, List<Product> products) {
         this.id = id;
         ProductProviderName = productProviderName;
+        this.products = products;
     }
 
     public Integer getId() {
@@ -36,6 +42,10 @@ public class ProductProvider implements Serializable {
 
     public void setProductProviderName(String productProviderName) {
         ProductProviderName = productProviderName;
+    }
+
+    public List<Product> getProducts() {
+        return products;
     }
 
     @Override
@@ -55,6 +65,7 @@ public class ProductProvider implements Serializable {
         return "ProductProvider{" +
                 "id=" + id +
                 ", ProductProviderName='" + ProductProviderName + '\'' +
+                ", products=" + products +
                 '}';
     }
 }
