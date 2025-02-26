@@ -1,6 +1,7 @@
 package com.GerenciadorEstoque.GerenEstoque.Services;
 
 import com.GerenciadorEstoque.GerenEstoque.Models.DTO.ProductRequestDTO;
+import com.GerenciadorEstoque.GerenEstoque.Models.DTO.ProductResponseDTO;
 import com.GerenciadorEstoque.GerenEstoque.Models.Product;
 import com.GerenciadorEstoque.GerenEstoque.Models.ProductCategory;
 import com.GerenciadorEstoque.GerenEstoque.Models.ProductHistory;
@@ -27,47 +28,57 @@ public class ProductService{
     @Autowired
     private ProductCategoryRepository categoryRepository;
 
-    public Product findById(Integer entityId) {
+    public ProductResponseDTO findById(Integer entityId) {
         Optional<Product> optionalProduct = productRepository.findById(entityId);
 
         if (optionalProduct.isEmpty()){
             throw new EntityNotFoundException("Product Not Found");
         }
 
-        return optionalProduct.get();
+        return new ProductResponseDTO(optionalProduct.get());
+    }
+
+    public ProductResponseDTO findBySku(String sku) {
+        Optional<Product> optionalProduct = productRepository.findBySku(sku);
+
+        if (optionalProduct.isEmpty()){
+            throw new EntityNotFoundException("Product Not Found");
+        }
+
+        return new ProductResponseDTO(optionalProduct.get());
     }
 
     public List<Product> findAll() {
         return productRepository.findAll();
     }
 
-    public Product insert(ProductRequestDTO entityDTO) {
+    public ProductResponseDTO insert(ProductRequestDTO productDTO) {
 
-        validateProduct(entityDTO);
-        Product entity = fromDTO(entityDTO);
+        validateProduct(productDTO);
+        Product product = fromDTO(productDTO);
 
-        String categoryName = entityDTO.getProductCategoryName();
+        String categoryName = productDTO.getProductCategoryName();
         Optional<ProductCategory> category = categoryRepository.findByCategoryName(categoryName);
 
         if(category.isEmpty()){
-            ProductCategory newCategory = new ProductCategory(null, entityDTO.getProductCategoryName());
+            ProductCategory newCategory = new ProductCategory(null, productDTO.getProductCategoryName());
             newCategory = categoryRepository.save(newCategory);
 
-            entity.setProductCategory(newCategory);
+            product.setProductCategory(newCategory);
         }
         else{
-            entity.setProductCategory(category.get());
+            product.setProductCategory(category.get());
         }
 
-        Product product = productRepository.save(entity);
-        ProductHistory history = new ProductHistory(null, product, new Date(), product.getQuantity());
-        historyRepository.save(history);
+        Product newProduct = productRepository.save(product);
 
-        return product;
+        saveProductHistory(newProduct);
+
+        return new ProductResponseDTO(newProduct);
     }
 
-    public Product update(ProductRequestDTO entityDTO) {
-        Optional<Product> optionalProduct = productRepository.findBySku(entityDTO.getSKU());
+    public ProductResponseDTO update(ProductRequestDTO productDTO) {
+        Optional<Product> optionalProduct = productRepository.findBySku(productDTO.getSKU());
 
         if (optionalProduct.isEmpty()){
             throw new EntityNotFoundException("Product Not Found");
@@ -75,50 +86,62 @@ public class ProductService{
 
         Product product = optionalProduct.get();
 
-        updateData(product, entityDTO);
+        updateData(product, productDTO);
         productRepository.save(product);
-        return product;
+
+        return new ProductResponseDTO(product);
     }
 
-    public void delete(Integer entityId) {
+    public void deleteById(Integer entityId) {
+        if (!productRepository.existsById(entityId)) {
+            throw new EntityNotFoundException("Product Not Found");
+        }
         productRepository.deleteById(entityId);
     }
 
-    private void validateProduct(ProductRequestDTO entity) {
-        if (entity.getName() == null || entity.getName().isBlank()) {
+    public void deleteBySku(String sku) {
+        if (!productRepository.existsBySku(sku)) {
+            throw new EntityNotFoundException("Product Not Found");
+        }
+        productRepository.deleteBySku(sku);
+    }
+
+    private void validateProduct(ProductRequestDTO productDTO) {
+        if (productDTO.getName() == null || productDTO.getName().isBlank()) {
             throw new IllegalArgumentException("O nome do produto não pode estar vazio.");
         }
-        if (entity.getPrice() == null) {
+        if (productDTO.getPrice() == null) {
             throw new IllegalArgumentException("O preço do produto não pode estar vazio.");
         }
-        if (entity.getQuantity() == null) {
+        if (productDTO.getQuantity() == null) {
             throw new IllegalArgumentException("A quantidade do produto não pode estar vazia");
         }
     }
 
-    private Product fromDTO(ProductRequestDTO entityDTO){
-        Product entity = new Product();
+    private Product fromDTO(ProductRequestDTO productDTO){
+        Product product = new Product();
+        fromProductDTOToProduct(product, productDTO);
 
-        entity.setName(entityDTO.getName());
-        entity.setDescription(entityDTO.getDescription());
-        entity.setPrice(entityDTO.getPrice());
-        entity.setMinimumForReplacement(entityDTO.getMinimumForReplacement());
-        entity.setQuantity(entityDTO.getQuantity());
-
-        return entity;
+        return product;
     }
 
-    private void updateData(Product product, ProductRequestDTO entityDTO){
-        product.setName(entityDTO.getName());
-        product.setDescription(entityDTO.getDescription());
-/*        product.setProductCategory(entityDTO.getProductCategory());
-        product.setProviders(entityDTO.getProviders());*/
-        product.setPrice(entityDTO.getPrice());
-        product.setQuantity(entityDTO.getQuantity());
-        product.setMinimumForReplacement(entityDTO.getMinimumForReplacement());
+    private void updateData(Product product, ProductRequestDTO productDTO){
+        fromProductDTOToProduct(product, productDTO);
+        saveProductHistory(product);
+    }
 
+
+
+    private void fromProductDTOToProduct(Product product, ProductRequestDTO productDTO){
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setQuantity(productDTO.getQuantity());
+        product.setMinimumForReplacement(productDTO.getMinimumForReplacement());
+    }
+
+    private void saveProductHistory(Product product) {
         ProductHistory history = new ProductHistory(null, product, new Date(), product.getQuantity());
         historyRepository.save(history);
     }
-
 }

@@ -1,7 +1,8 @@
 package com.GerenciadorEstoque.GerenEstoque.Models.DTO;
 
 import com.GerenciadorEstoque.GerenEstoque.Models.Product;
-import jakarta.persistence.Column;
+
+import java.util.Date;
 
 public class ProductRequestDTO {
     private String SKU;
@@ -17,12 +18,30 @@ public class ProductRequestDTO {
     private Integer minimumForReplacement;
 
     private Integer quantity;
+    private Date dateOfRegister;
 
     public ProductRequestDTO() {
     }
 
+    public ProductRequestDTO(String SKU,
+                             String name,
+                             String description,
+                             String productCategoryName,
+                             Double price,
+                             Integer minimumForReplacement,
+                             Integer quantity) {
+        this.SKU = SKU;
+        this.name = name;
+        this.description = description;
+        this.productCategoryName = productCategoryName;
+        this.price = price;
+        this.minimumForReplacement = minimumForReplacement;
+        this.quantity = quantity;
+        this.dateOfRegister = new Date();
+    }
+
     public ProductRequestDTO(Product product){
-        this.SKU = product.getSKU();
+        this.SKU = product.getSku();
         this.name = product.getName();
         this.description = product.getDescription();
         this.productCategoryName = product.getProductCategory().getCategoryName();

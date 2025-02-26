@@ -1,6 +1,9 @@
 package com.GerenciadorEstoque.GerenEstoque.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ public class Product implements Serializable {
     private Integer id;
 
     @Column(unique = true)
-    private String SKU;
+    private String sku;
 
     @Column(nullable = false)
     private String name;
@@ -33,7 +36,7 @@ public class Product implements Serializable {
                 joinColumns = @JoinColumn(name = "product_id"),
                 inverseJoinColumns = @JoinColumn(name = "provider_id"))
     private List<ProductProvider> providers = new ArrayList<>();
-
+    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<ProductHistory> histories = new ArrayList<>();
 
@@ -44,21 +47,23 @@ public class Product implements Serializable {
 
     @Column(nullable = false)
     private Integer quantity;
-
-    private Date dateOfRegister;
+    private final Date dateOfRegister;
 
     public Product() {
+        this.dateOfRegister = new Date();
     }
 
     public Product(Integer id,
                    String name,
                    String description,
+                   ProductCategory productCategory,
                    Double price,
                    Integer minimumForReplacement,
                    Integer quantity) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.productCategory = productCategory;
         this.price = price;
         this.minimumForReplacement = minimumForReplacement;
         this.dateOfRegister = new Date();
@@ -73,8 +78,8 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public String getSKU() {
-        return SKU;
+    public String getSku() {
+        return sku;
     }
 
     public String getName() {
@@ -161,7 +166,7 @@ public class Product implements Serializable {
     public String toString() {
         return "Product{" +
                 "id=" + id +
-                ", SKU='" + SKU + '\'' +
+                ", sku='" + sku + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", productCategory=" + productCategory +

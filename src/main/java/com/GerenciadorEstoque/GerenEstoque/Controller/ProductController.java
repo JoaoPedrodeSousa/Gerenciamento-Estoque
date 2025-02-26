@@ -1,6 +1,7 @@
 package com.GerenciadorEstoque.GerenEstoque.Controller;
 
 import com.GerenciadorEstoque.GerenEstoque.Models.DTO.ProductRequestDTO;
+import com.GerenciadorEstoque.GerenEstoque.Models.DTO.ProductResponseDTO;
 import com.GerenciadorEstoque.GerenEstoque.Models.Product;
 import com.GerenciadorEstoque.GerenEstoque.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,41 +11,52 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller(value = "/product")
+@RestController
+@RequestMapping("/products")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "/all")
     public ResponseEntity<List<Product>> findAll(){
         List<Product> products = productService.findAll();
         return ResponseEntity.ok().body(products);
     }
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<ProductRequestDTO> findById(@PathVariable Integer id){
-        Product product = productService.findById(id);
-        ProductRequestDTO productRequestDTO = new ProductRequestDTO(product);
-
+    @GetMapping(value = "/id/{id}")
+    public ResponseEntity<ProductResponseDTO> findById(@PathVariable Integer id){
+        ProductResponseDTO productRequestDTO = productService.findById(id);
         return ResponseEntity.ok().body(productRequestDTO);
     }
 
-    @PostMapping(value = "/")
+    @GetMapping(value = "/sku/{sku}")
+    public ResponseEntity<ProductResponseDTO> findBySku(@PathVariable String sku){
+        ProductResponseDTO productRequestDTO = productService.findBySku(sku);
+        return ResponseEntity.ok().body(productRequestDTO);
+    }
+
+    @PostMapping
     public ResponseEntity<Void> insert(@RequestBody ProductRequestDTO productRequestDTO){
         productService.insert(productRequestDTO);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("value = {SKU}")
+    @PutMapping("value = /{sku}")
     public ResponseEntity<Void> update(@PathVariable String SKU,
                                        @RequestBody ProductRequestDTO productRequestDTO){
-        Product product = productService.update(productRequestDTO);
+        ProductResponseDTO product = productService.update(productRequestDTO);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> Delete(@PathVariable Integer id){
-        productService.delete(id);
+    @DeleteMapping(value = "/id/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id){
+        productService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/sku/{sku}")
+    public ResponseEntity<Void> deleteBySku(@PathVariable String sku){
+        productService.deleteBySku(sku);
         return ResponseEntity.noContent().build();
     }
 
