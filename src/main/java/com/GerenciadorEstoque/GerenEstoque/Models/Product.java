@@ -2,8 +2,6 @@ package com.GerenciadorEstoque.GerenEstoque.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String sku;
 
     @Column(nullable = false)
@@ -31,11 +29,8 @@ public class Product implements Serializable {
     @JoinColumn(name = "category_id",referencedColumnName = "id")
     private ProductCategory productCategory;
 
-    @ManyToMany
-    @JoinTable(name = "product_provider_relation",
-                joinColumns = @JoinColumn(name = "product_id"),
-                inverseJoinColumns = @JoinColumn(name = "provider_id"))
-    private List<ProductProvider> providers = new ArrayList<>();
+    private String provider;
+
     @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<ProductHistory> histories = new ArrayList<>();
@@ -57,6 +52,7 @@ public class Product implements Serializable {
                    String name,
                    String description,
                    ProductCategory productCategory,
+                   String provider,
                    Double price,
                    Integer minimumForReplacement,
                    Integer quantity) {
@@ -64,6 +60,7 @@ public class Product implements Serializable {
         this.name = name;
         this.description = description;
         this.productCategory = productCategory;
+        this.provider = provider;
         this.price = price;
         this.minimumForReplacement = minimumForReplacement;
         this.dateOfRegister = new Date();
@@ -114,12 +111,12 @@ public class Product implements Serializable {
         this.histories = histories;
     }
 
-    public List<ProductProvider> getProviders() {
-        return providers;
+    public String getProvider() {
+        return provider;
     }
 
-    public void setProviders(List<ProductProvider> providers) {
-        this.providers = providers;
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 
     public Double getPrice() {
@@ -170,7 +167,7 @@ public class Product implements Serializable {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", productCategory=" + productCategory +
-                ", providers=" + providers +
+                ", provider=" + provider +
                 ", price=" + price +
                 ", minimumForReplacement=" + minimumForReplacement +
                 ", dateOfRegister=" + dateOfRegister +

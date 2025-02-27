@@ -6,7 +6,6 @@ import com.GerenciadorEstoque.GerenEstoque.Models.Product;
 import com.GerenciadorEstoque.GerenEstoque.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,10 +40,10 @@ public class ProductController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("value = /{sku}")
-    public ResponseEntity<Void> update(@PathVariable String SKU,
+    @PutMapping(value = "/{sku}")
+    public ResponseEntity<Void> update(@PathVariable String sku,
                                        @RequestBody ProductRequestDTO productRequestDTO){
-        ProductResponseDTO product = productService.update(productRequestDTO);
+        ProductResponseDTO product = productService.update(sku, productRequestDTO);
         return ResponseEntity.noContent().build();
     }
 

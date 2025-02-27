@@ -1,57 +1,41 @@
 package com.GerenciadorEstoque.GerenEstoque.Models.DTO;
 
-import com.GerenciadorEstoque.GerenEstoque.Models.Product;
-
 import java.util.Date;
 
 public class ProductRequestDTO {
-    private String SKU;
 
-    private String name;
+    private final String name;
 
-    private String description;
+    private final String description;
 
-    private String productCategoryName;
+    private final String categoryName;
 
-    private Double price;
+    private final Double price;
 
-    private Integer minimumForReplacement;
+    private final Integer minimumForReplacement;
 
-    private Integer quantity;
-    private Date dateOfRegister;
+    private final Integer quantity;
 
-    public ProductRequestDTO() {
-    }
+    private final Date dateOfRegister;
 
-    public ProductRequestDTO(String SKU,
+    private final String provider;
+
+    public ProductRequestDTO(
                              String name,
                              String description,
-                             String productCategoryName,
+                             String categoryName,
+                             String provider,
                              Double price,
                              Integer minimumForReplacement,
                              Integer quantity) {
-        this.SKU = SKU;
         this.name = name;
         this.description = description;
-        this.productCategoryName = productCategoryName;
+        this.categoryName = categoryName;
+        this.provider = provider;
         this.price = price;
         this.minimumForReplacement = minimumForReplacement;
         this.quantity = quantity;
         this.dateOfRegister = new Date();
-    }
-
-    public ProductRequestDTO(Product product){
-        this.SKU = product.getSku();
-        this.name = product.getName();
-        this.description = product.getDescription();
-        this.productCategoryName = product.getProductCategory().getCategoryName();
-        this.price = product.getPrice();
-        this.minimumForReplacement = product.getMinimumForReplacement();
-        this.quantity = product.getQuantity();
-    }
-
-    public String getSKU() {
-        return SKU;
     }
 
     public String getName() {
@@ -62,8 +46,16 @@ public class ProductRequestDTO {
         return description;
     }
 
-    public String getProductCategoryName() {
-        return productCategoryName;
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public Date getDateOfRegister() {
+        return dateOfRegister;
+    }
+
+    public String getProvider() {
+        return provider;
     }
 
     public Double getPrice() {

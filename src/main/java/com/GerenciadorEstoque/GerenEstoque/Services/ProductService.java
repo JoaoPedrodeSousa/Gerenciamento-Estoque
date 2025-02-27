@@ -9,6 +9,7 @@ import com.GerenciadorEstoque.GerenEstoque.repository.ProductCategoryRepository;
 import com.GerenciadorEstoque.GerenEstoque.repository.ProductHistoryRepository;
 import com.GerenciadorEstoque.GerenEstoque.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,17 +56,19 @@ public class ProductService{
     public ProductResponseDTO insert(ProductRequestDTO productDTO) {
 
         validateProduct(productDTO);
-        Product product = fromDTO(productDTO);
+        Product product = new Product();
+        fromProductDTOToProduct(product, productDTO);
 
-        String categoryName = productDTO.getProductCategoryName();
+        String categoryName = productDTO.getCategoryName();
         Optional<ProductCategory> category = categoryRepository.findByCategoryName(categoryName);
 
         if(category.isEmpty()){
-            ProductCategory newCategory = new ProductCategory(null, productDTO.getProductCategoryName());
+            ProductCategory newCategory = new ProductCategory(null, productDTO.getCategoryName());
             newCategory = categoryRepository.save(newCategory);
 
             product.setProductCategory(newCategory);
         }
+
         else{
             product.setProductCategory(category.get());
         }
@@ -77,8 +80,8 @@ public class ProductService{
         return new ProductResponseDTO(newProduct);
     }
 
-    public ProductResponseDTO update(ProductRequestDTO productDTO) {
-        Optional<Product> optionalProduct = productRepository.findBySku(productDTO.getSKU());
+    public ProductResponseDTO update(String sku, ProductRequestDTO productDTO) {
+        Optional<Product> optionalProduct = productRepository.findBySku(sku);
 
         if (optionalProduct.isEmpty()){
             throw new EntityNotFoundException("Product Not Found");
@@ -99,6 +102,7 @@ public class ProductService{
         productRepository.deleteById(entityId);
     }
 
+    @Transactional
     public void deleteBySku(String sku) {
         if (!productRepository.existsBySku(sku)) {
             throw new EntityNotFoundException("Product Not Found");
@@ -107,7 +111,7 @@ public class ProductService{
     }
 
     private void validateProduct(ProductRequestDTO productDTO) {
-        if (productDTO.getName() == null || productDTO.getName().isBlank()) {
+        if (productDTO.getName() == null || productDTO.getName().isBlank() || productDTO.getProvider().isBlank()) {
             throw new IllegalArgumentException("O nome do produto não pode estar vazio.");
         }
         if (productDTO.getPrice() == null) {
@@ -118,19 +122,10 @@ public class ProductService{
         }
     }
 
-    private Product fromDTO(ProductRequestDTO productDTO){
-        Product product = new Product();
-        fromProductDTOToProduct(product, productDTO);
-
-        return product;
-    }
-
     private void updateData(Product product, ProductRequestDTO productDTO){
         fromProductDTOToProduct(product, productDTO);
         saveProductHistory(product);
     }
-
-
 
     private void fromProductDTOToProduct(Product product, ProductRequestDTO productDTO){
         product.setName(productDTO.getName());
@@ -138,6 +133,7 @@ public class ProductService{
         product.setPrice(productDTO.getPrice());
         product.setQuantity(productDTO.getQuantity());
         product.setMinimumForReplacement(productDTO.getMinimumForReplacement());
+        product.setProvider(productDTO.getProvider());
     }
 
     private void saveProductHistory(Product product) {
