@@ -21,10 +21,4 @@ public class ProductHistoryService {
                 .map(ProductHistoryResponseDTO::new)
                 .collect(Collectors.toList());
     }
-
-    public ProductHistoryResponseDTO findByUuid(String uuid){
-        ProductHistory productHistory = historyRepository.findByUuid(uuid);
-
-        return new ProductHistoryResponseDTO(productHistory);
-    }
 }

@@ -13,5 +13,4 @@ public interface ProductHistoryRepository extends JpaRepository<ProductHistory, 
     @Query("SELECT ph FROM ProductHistory ph WHERE ph.product.sku = ?1")
     List<ProductHistory> findBySku(String sku);
 
-    ProductHistory findByUuid(String uuid);
 }

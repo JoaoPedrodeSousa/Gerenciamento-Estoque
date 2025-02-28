@@ -10,21 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products/{sku}")
+@RequestMapping("/products/history")
 public class ProductHistoryController {
 
     @Autowired
     private ProductHistoryService historyService;
 
-    @GetMapping(value = "/history")
+    @GetMapping(value = "/{sku}")
     public ResponseEntity<List<ProductHistoryResponseDTO>> findAll(@PathVariable String sku){
         List<ProductHistoryResponseDTO> histories = historyService.findBySku(sku);
         return ResponseEntity.ok().body(histories);
     }
 
-    @GetMapping(value = "/{uuid}")
-    public ResponseEntity<ProductHistoryResponseDTO> findByUuid(@PathVariable String uuid){
-        ProductHistoryResponseDTO history = historyService.findByUuid(uuid);
-        return ResponseEntity.ok().body(history);
-    }
 }
