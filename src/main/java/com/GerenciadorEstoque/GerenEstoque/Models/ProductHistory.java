@@ -1,6 +1,7 @@
 package com.GerenciadorEstoque.GerenEstoque.Models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +14,11 @@ public class ProductHistory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @UuidGenerator
+    private String uuid;
 
+    @ManyToOne
+    @JoinColumn(name = "product_sku",referencedColumnName = "sku")
     private Product product;
     private Date dateOfReplacement;
     private Integer numberOfReplacementProducts;
@@ -36,6 +41,9 @@ public class ProductHistory implements Serializable {
         this.id = id;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
     public Product getProduct() {
         return product;
     }

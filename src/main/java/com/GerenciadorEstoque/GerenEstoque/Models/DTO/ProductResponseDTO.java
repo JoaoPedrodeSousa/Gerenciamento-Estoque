@@ -11,7 +11,7 @@ public class ProductResponseDTO {
 
     private String description;
 
-    private String productCategoryName;
+    private String categoryName;
 
     private Double price;
 
@@ -27,7 +27,7 @@ public class ProductResponseDTO {
         this.SKU = product.getSku();
         this.name = product.getName();
         this.description = product.getDescription();
-        this.productCategoryName = product.getProductCategory().getCategoryName();
+        this.categoryName = product.getProductCategory().getCategoryName();
         this.price = product.getPrice();
         this.dateOfRegister = product.getDateOfRegister();
         this.minimumForReplacement = product.getMinimumForReplacement();
@@ -46,8 +46,8 @@ public class ProductResponseDTO {
         return description;
     }
 
-    public String getProductCategoryName() {
-        return productCategoryName;
+    public String getCategoryName() {
+        return categoryName;
     }
 
     public Double getPrice() {

@@ -17,7 +17,7 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String sku;
 
     @Column(nullable = false)
@@ -77,6 +77,10 @@ public class Product implements Serializable {
 
     public String getSku() {
         return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
     }
 
     public String getName() {

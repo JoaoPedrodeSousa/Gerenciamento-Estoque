@@ -5,6 +5,7 @@ import com.GerenciadorEstoque.GerenEstoque.Models.DTO.ProductResponseDTO;
 import com.GerenciadorEstoque.GerenEstoque.Models.Product;
 import com.GerenciadorEstoque.GerenEstoque.Models.ProductCategory;
 import com.GerenciadorEstoque.GerenEstoque.Models.ProductHistory;
+import com.GerenciadorEstoque.GerenEstoque.Utils.GenerateSKU;
 import com.GerenciadorEstoque.GerenEstoque.repository.ProductCategoryRepository;
 import com.GerenciadorEstoque.GerenEstoque.repository.ProductHistoryRepository;
 import com.GerenciadorEstoque.GerenEstoque.repository.ProductRepository;
@@ -29,16 +30,6 @@ public class ProductService{
     @Autowired
     private ProductCategoryRepository categoryRepository;
 
-    public ProductResponseDTO findById(Integer entityId) {
-        Optional<Product> optionalProduct = productRepository.findById(entityId);
-
-        if (optionalProduct.isEmpty()){
-            throw new EntityNotFoundException("Product Not Found");
-        }
-
-        return new ProductResponseDTO(optionalProduct.get());
-    }
-
     public ProductResponseDTO findBySku(String sku) {
         Optional<Product> optionalProduct = productRepository.findBySku(sku);
 
@@ -56,8 +47,11 @@ public class ProductService{
     public ProductResponseDTO insert(ProductRequestDTO productDTO) {
 
         validateProduct(productDTO);
+
         Product product = new Product();
+
         fromProductDTOToProduct(product, productDTO);
+        product.setSku(new GenerateSKU().setSKU(product.getName()));
 
         String categoryName = productDTO.getCategoryName();
         Optional<ProductCategory> category = categoryRepository.findByCategoryName(categoryName);
@@ -93,13 +87,6 @@ public class ProductService{
         productRepository.save(product);
 
         return new ProductResponseDTO(product);
-    }
-
-    public void deleteById(Integer entityId) {
-        if (!productRepository.existsById(entityId)) {
-            throw new EntityNotFoundException("Product Not Found");
-        }
-        productRepository.deleteById(entityId);
     }
 
     @Transactional

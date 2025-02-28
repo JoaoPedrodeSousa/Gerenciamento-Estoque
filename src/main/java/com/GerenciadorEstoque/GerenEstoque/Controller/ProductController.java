@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,18 +18,17 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping(value = "/all")
-    public ResponseEntity<List<Product>> findAll(){
+    @GetMapping
+    public ResponseEntity<List<ProductResponseDTO>> findAll(){
         List<Product> products = productService.findAll();
-        return ResponseEntity.ok().body(products);
-    }
-    @GetMapping(value = "/id/{id}")
-    public ResponseEntity<ProductResponseDTO> findById(@PathVariable Integer id){
-        ProductResponseDTO productRequestDTO = productService.findById(id);
-        return ResponseEntity.ok().body(productRequestDTO);
+        List<ProductResponseDTO> productsDTO = new ArrayList<>();
+
+        products.forEach(product -> productsDTO.add(new ProductResponseDTO(product)));
+
+        return ResponseEntity.ok().body(productsDTO);
     }
 
-    @GetMapping(value = "/sku/{sku}")
+    @GetMapping(value = "/{sku}")
     public ResponseEntity<ProductResponseDTO> findBySku(@PathVariable String sku){
         ProductResponseDTO productRequestDTO = productService.findBySku(sku);
         return ResponseEntity.ok().body(productRequestDTO);
@@ -47,13 +47,7 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "/id/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Integer id){
-        productService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping(value = "/sku/{sku}")
+    @DeleteMapping(value = "/{sku}")
     public ResponseEntity<Void> deleteBySku(@PathVariable String sku){
         productService.deleteBySku(sku);
         return ResponseEntity.noContent().build();
