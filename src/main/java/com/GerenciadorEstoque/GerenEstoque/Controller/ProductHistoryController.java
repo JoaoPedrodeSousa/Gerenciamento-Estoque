@@ -1,5 +1,6 @@
 package com.GerenciadorEstoque.GerenEstoque.Controller;
 
+import com.GerenciadorEstoque.GerenEstoque.Models.DTO.ProductHistoryResponseDTO;
 import com.GerenciadorEstoque.GerenEstoque.Models.ProductHistory;
 import com.GerenciadorEstoque.GerenEstoque.Services.ProductHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +16,15 @@ public class ProductHistoryController {
     @Autowired
     private ProductHistoryService historyService;
 
-    @GetMapping(value = "/h")
-    public ResponseEntity<List<ProductHistory>> findAll(@PathVariable String sku){
-        List<ProductHistory> histories = historyService.findBySku(sku);
+    @GetMapping(value = "/history")
+    public ResponseEntity<List<ProductHistoryResponseDTO>> findAll(@PathVariable String sku){
+        List<ProductHistoryResponseDTO> histories = historyService.findBySku(sku);
         return ResponseEntity.ok().body(histories);
     }
 
     @GetMapping(value = "/{uuid}")
-    public ResponseEntity<ProductHistory> findByUuid(@PathVariable String uuid){
-        ProductHistory history = historyService.findByUuid(uuid);
+    public ResponseEntity<ProductHistoryResponseDTO> findByUuid(@PathVariable String uuid){
+        ProductHistoryResponseDTO history = historyService.findByUuid(uuid);
         return ResponseEntity.ok().body(history);
     }
 }
