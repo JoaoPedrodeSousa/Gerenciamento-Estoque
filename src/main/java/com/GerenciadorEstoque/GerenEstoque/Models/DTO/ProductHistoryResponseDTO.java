@@ -6,8 +6,6 @@ import java.util.Date;
 
 public class ProductHistoryResponseDTO {
 
-    private final String uuid;
-
     private final String productName;
 
     private final String sku;
@@ -17,12 +15,11 @@ public class ProductHistoryResponseDTO {
     private final Integer numberOfReplacementProducts;
 
 
-    public ProductHistoryResponseDTO(String uuid,
+    public ProductHistoryResponseDTO(
                                      String productName,
                                      Date dateOfReplacement,
                                      Integer numberOfReplacementProducts,
                                      String sku) {
-        this.uuid = uuid;
         this.sku = sku;
         this.productName = productName;
         this.dateOfReplacement = dateOfReplacement;
@@ -30,15 +27,10 @@ public class ProductHistoryResponseDTO {
     }
 
     public ProductHistoryResponseDTO(ProductHistory productHistory) {
-        this.uuid = productHistory.getUuid();
         this.sku = productHistory.getProduct().getSku();
         this.productName = productHistory.getProduct().getName();
         this.dateOfReplacement = productHistory.getDateOfReplacement();
         this.numberOfReplacementProducts = productHistory.getNumberOfReplacementProducts();
-    }
-
-    public String getUuid() {
-        return uuid;
     }
 
     public String getProductName() {

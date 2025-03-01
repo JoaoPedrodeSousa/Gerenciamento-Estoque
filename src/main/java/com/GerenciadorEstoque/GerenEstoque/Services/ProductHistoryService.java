@@ -1,12 +1,10 @@
 package com.GerenciadorEstoque.GerenEstoque.Services;
 
 import com.GerenciadorEstoque.GerenEstoque.Models.DTO.ProductHistoryResponseDTO;
-import com.GerenciadorEstoque.GerenEstoque.Models.ProductHistory;
 import com.GerenciadorEstoque.GerenEstoque.repository.ProductHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
