@@ -14,7 +14,7 @@ public class ProductHistoryService {
     private ProductHistoryRepository historyRepository;
 
     public List<ProductHistoryResponseDTO> findBySku(String sku) {
-        return historyRepository.findBySku(sku)
+        return historyRepository.findBySkuAndNotIsInactivated(sku)
                 .stream()
                 .map(ProductHistoryResponseDTO::new)
                 .collect(Collectors.toList());

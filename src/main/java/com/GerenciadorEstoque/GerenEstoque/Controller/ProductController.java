@@ -69,7 +69,7 @@ public class ProductController {
     @ApiResponse(responseCode = "204", description = "Delete Product Success.")
     @ApiResponse(responseCode = "404", description = " Product not found.")
     public ResponseEntity<Void> deleteBySku(@PathVariable String sku){
-        productService.deleteBySku(sku);
+        productService.softDeleteBySku(sku);
         return ResponseEntity.noContent().build();
     }
 }

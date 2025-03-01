@@ -30,18 +30,18 @@ public class ProductService{
     @Autowired
     private ProductCategoryRepository categoryRepository;
 
+    public List<Product> findAll() {
+        return productRepository.findAllByIsActived();
+    }
+
     public ProductResponseDTO findBySku(String sku) {
         Optional<Product> optionalProduct = productRepository.findBySku(sku);
 
-        if (optionalProduct.isEmpty()){
+        if (optionalProduct.isEmpty() || optionalProduct.get().isInactivated()){
             throw new EntityNotFoundException("Product Not Found");
         }
 
         return new ProductResponseDTO(optionalProduct.get());
-    }
-
-    public List<Product> findAll() {
-        return productRepository.findAll();
     }
 
     public ProductResponseDTO insert(ProductRequestDTO productDTO) {
@@ -51,7 +51,7 @@ public class ProductService{
         Product product = new Product();
 
         fromProductDTOToProduct(product, productDTO);
-        product.setSku(new GenerateSKU().setSKU(product.getName()));
+        product.setSku(GenerateSKU.setSKU(product.getName()));
 
         String categoryName = productDTO.getCategoryName();
         Optional<ProductCategory> category = categoryRepository.findByCategoryName(categoryName);
@@ -73,11 +73,11 @@ public class ProductService{
 
         return new ProductResponseDTO(newProduct);
     }
-
+    @Transactional
     public ProductResponseDTO update(String sku, ProductRequestDTO productDTO) {
         Optional<Product> optionalProduct = productRepository.findBySku(sku);
 
-        if (optionalProduct.isEmpty()){
+        if (optionalProduct.isEmpty() || optionalProduct.get().isInactivated()){
             throw new EntityNotFoundException("Product Not Found");
         }
 
@@ -90,11 +90,13 @@ public class ProductService{
     }
 
     @Transactional
-    public void deleteBySku(String sku) {
+    public void softDeleteBySku(String sku) {
         if (!productRepository.existsBySku(sku)) {
             throw new EntityNotFoundException("Product Not Found");
         }
-        productRepository.deleteBySku(sku);
+        Product product = productRepository.findBySku(sku).get();
+        product.setInactivated(true);
+        productRepository.save(product);
     }
 
     private void validateProduct(ProductRequestDTO productDTO) {

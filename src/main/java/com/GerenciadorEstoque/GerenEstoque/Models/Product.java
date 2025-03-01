@@ -42,7 +42,11 @@ public class Product implements Serializable {
 
     @Column(nullable = false)
     private Integer quantity;
+
     private final Date dateOfRegister;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean isInactivated;
 
     public Product() {
         this.dateOfRegister = new Date();
@@ -149,6 +153,14 @@ public class Product implements Serializable {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public boolean isInactivated() {
+        return isInactivated;
+    }
+
+    public void setInactivated(boolean inactivated) {
+        isInactivated = inactivated;
     }
 
     @Override
