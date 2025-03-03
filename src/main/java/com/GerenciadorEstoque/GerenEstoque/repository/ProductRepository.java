@@ -13,6 +13,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT ph FROM Product ph WHERE ph.isInactivated = false")
     List<Product> findAllByIsActived();
     Optional<Product> findBySku(String sku);
-    void deleteBySku(String sku);
     Boolean existsBySku(String sku);
 }

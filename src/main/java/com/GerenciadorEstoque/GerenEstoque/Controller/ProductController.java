@@ -58,9 +58,19 @@ public class ProductController {
     @Operation(summary = "Update an existing product using its SKU.")
     @ApiResponse(responseCode = "204", description = "Update Product Success.")
     @ApiResponse(responseCode = "404", description = " Product not found.")
-    public ResponseEntity<Void> update(@PathVariable String sku,
+    public ResponseEntity<Void> updateInformation(@PathVariable String sku,
                                        @RequestBody ProductRequestDTO productRequestDTO){
-        ProductResponseDTO product = productService.update(sku, productRequestDTO);
+        ProductResponseDTO product = productService.updateInformation(sku, productRequestDTO);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/q/{sku}")
+    @Operation(summary = "Update an existing product using its SKU.")
+    @ApiResponse(responseCode = "204", description = "Update Product Success.")
+    @ApiResponse(responseCode = "404", description = " Product not found.")
+    public ResponseEntity<Void> updateQuantity(@PathVariable String sku,
+                                       @RequestBody ProductRequestDTO productRequestDTO){
+        ProductResponseDTO product = productService.updateQuantity(sku, productRequestDTO);
         return ResponseEntity.noContent().build();
     }
 

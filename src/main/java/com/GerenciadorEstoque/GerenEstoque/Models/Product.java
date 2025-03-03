@@ -38,6 +38,7 @@ public class Product implements Serializable {
     @Column(nullable = false)
     private Double price;
 
+    @Column(nullable = false)
     private Integer minimumForReplacement;
 
     @Column(nullable = false)
