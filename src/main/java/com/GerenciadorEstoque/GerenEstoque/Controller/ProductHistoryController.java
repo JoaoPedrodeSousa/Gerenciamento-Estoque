@@ -16,10 +16,11 @@ public class ProductHistoryController {
 
     @Autowired
     private ProductHistoryService historyService;
+
     @GetMapping
     @Operation(summary = "Return logs with the same code SKU.")
     @ApiResponse(responseCode = "200", description = "Return Success.")
-    public ResponseEntity<List<ProductHistoryResponseDTO>> findAll(@PathVariable String sku){
+    public ResponseEntity<List<ProductHistoryResponseDTO>> findBySku(@PathVariable String sku){
         List<ProductHistoryResponseDTO> histories = historyService.findBySku(sku);
         return ResponseEntity.ok().body(histories);
     }

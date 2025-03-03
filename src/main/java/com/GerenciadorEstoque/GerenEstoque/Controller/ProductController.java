@@ -70,7 +70,7 @@ public class ProductController {
     @ApiResponse(responseCode = "404", description = " Product not found.")
     public ResponseEntity<Void> updateQuantity(@PathVariable String sku,
                                        @RequestBody ProductRequestDTO productRequestDTO){
-        ProductResponseDTO product = productService.updateQuantity(sku, productRequestDTO);
+        ProductResponseDTO product = productService.updateQuantityAndPrice(sku, productRequestDTO);
         return ResponseEntity.noContent().build();
     }
 
